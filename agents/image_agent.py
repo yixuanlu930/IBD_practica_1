@@ -15,7 +15,7 @@ RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'user')
 RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'password')
 
-hf_token = "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"
+hf_token = os.getenv('HF_TOKEN')
 client = InferenceClient(token=hf_token)
 
 # Ruta correcta para que el CSV salga en VS Code

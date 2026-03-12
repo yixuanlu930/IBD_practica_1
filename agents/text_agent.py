@@ -6,7 +6,7 @@ from huggingface_hub import InferenceClient
 time.sleep(10)  # Esperamos a que el contenedor de RabbitMQ se inicialice
 hostname = socket.gethostname()
 csv_file = f"/results/text_results_{hostname}.csv"
-hf_token = "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"
+hf_token = os.getenv('HF_TOKEN')
 
 # Si el token está vacío, el programa se cierra para no saturar RabbitMQ
 if not hf_token:
