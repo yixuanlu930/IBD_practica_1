@@ -26,16 +26,20 @@ IMPORTANTE SOBRE HUGGING FACE
 -----------------------------
 Para ejecutar correctamente el servicio text_agent es necesario disponer de un token personal de Hugging Face.
 
-Por motivos de seguridad, este token no se incluye en el repositorio. La opción más limpia es que cada usuario, incluido el profesor, utilice su propio User Access Token de Hugging Face y lo configure en un archivo .env local.
+Aunque no sea la opción más segura, por simpleza para ejecutar el código, se incluye directamente el token en el código. Bien es sabido que la opción más limpia es que cada usuario, incluido el profesor, utilice su propio User Access Token de Hugging Face y lo configure en un archivo .env local.
 
 Pasos:
-1. Crear un token en la cuenta personal de Hugging Face.
-2. Guardarlo en un archivo .env en la raíz del proyecto con el formato:
-   HF_TOKEN=tu_token_aqui
-3. Levantar la infraestructura con:
-   docker compose up --build
-
-De este modo, el repositorio mantiene el mismo código para todos los integrantes, pero cada usuario gestiona su credencial de forma local y segura.
+1. Crear una cuenta en https://huggingface.co
+2. Ir a https://huggingface.co/settings/tokens
+3. Crear un nuevo token con:
+   - Type: **Read**
+   - Opción **"Make calls to Inference Providers"** activada
+4. En el archivo `docker-compose.yml`, sustituir el valor de `HF_TOKEN` 
+   en los servicios `text_agent` e `image_agent` por tu token personal:
+```yaml
+- HF_TOKEN= hf_tu_token_aqui
+```
+Sin este token o con un token sin los permisos correctos, el `text_agent` fallará con un error `403 Forbidden` al intentar conectarse a la Inference API de Hugging Face.
 
 
 2. CÓMO EJECUTAR LOS AGENTES
