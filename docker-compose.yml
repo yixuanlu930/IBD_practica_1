@@ -39,6 +39,7 @@ services:
       - RABBITMQ_USER=user
       - RABBITMQ_PASS=password
       - HF_TOKEN= #Añadir token propio de Hugging Face #
+      - "5001:5000"
     volumes:
       - ./results:/results
     restart: always
