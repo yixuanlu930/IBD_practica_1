@@ -16,7 +16,7 @@ RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'user')
 RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'password')
 
-# CARGA GLOBAL DEL MODELO EANet
+# Carga global del modelo EANet
 print(f"[{hostname}] Cargando modelo EANet desde Hugging Face...")
 try:
     custom_objects = {'AdamW': tfa.optimizers.AdamW}
@@ -27,7 +27,7 @@ except Exception as e:
     print(f"Error crítico cargando el modelo: {e}")
     exit(1)
 
-#LÓGICA DE PROCESAMIENTO CENTRALIZADA
+# Lógica central para procesar la imagen, predecir, guardar resultados y actualizar historial
 def procesar_imagen_logic(task_id, content):
     """
     Realiza el pre-procesamiento, predicción, guardado en CSV 
@@ -72,7 +72,7 @@ def procesar_imagen_logic(task_id, content):
         print(f"Error en procesar_imagen_logic: {e}")
         raise e
 
-#API SÍNCRONA (FLASK)
+# API REST para procesamiento síncrono
 
 @app.route('/tasks', methods=['POST'])
 def create_task_sync():
@@ -97,7 +97,7 @@ def get_task_detail(task_id):
         return jsonify({"error": "Tarea no encontrada"}), 404
     return jsonify(task), 200
 
-#LÓGICA ASÍNCRONA (RABBITMQ)
+# Lógica para consumir tareas de RabbitMQ de forma asíncrona
 
 def consume_tasks_async():
     print(f" [*] Agente {hostname} conectando a RabbitMQ...")
@@ -128,7 +128,7 @@ def consume_tasks_async():
             # Ejecutar lógica central
             result = procesar_imagen_logic(task['task_id'], task['content'])
             
-            # PUBLICAR EN LOGS_EXCHANGE (Añadido del primer script)
+            # Publicar resultado en exchange de logs
             log_message = {
                 "task_id": result["task_id"],
                 "agent": "Image_agent",
@@ -154,11 +154,11 @@ def consume_tasks_async():
 
 
 if __name__ == "__main__":
-    # 1. Iniciar RabbitMQ en segundo plano
+    # Iniciar RabbitMQ en segundo plano
     async_thread = threading.Thread(target=consume_tasks_async)
     async_thread.daemon = True
     async_thread.start()
 
-    # 2. Iniciar Flask
+    # Iniciar Flask
     print(f" [*] API Flask escuchando en puerto 5000...")
     app.run(host='0.0.0.0', port=5000, threaded=True)

@@ -60,6 +60,7 @@ reviews = [
 transform = transforms.Compose([transforms.ToTensor()])
 cifar_data = torchvision.datasets.CIFAR100(root='./data', train=True, download=True)
 
+# Función para generar eventos de tareas aleatorias
 def generate_task_event():
     task_type = random.choice(["text_analysis", "image_classification"])
 

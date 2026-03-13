@@ -3,18 +3,20 @@ from datetime import datetime
 
 time.sleep(15)
 
+# Configuración de RabbitMQ y archivo de log
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'user')
 RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'password')
 LOG_FILE = '/results/tasks_log.csv'
 
+# Conexión a RabbitMQ
 credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
 connection = pika.BlockingConnection(pika.ConnectionParameters(
     host=RABBITMQ_HOST, credentials=credentials
 ))
 channel = connection.channel()
 
-# Fanout exchange — recibe de TODOS los agentes
+# Fanout exchange — recibe de todos los agentes
 channel.exchange_declare(exchange='logs_exchange', exchange_type='fanout')
 
 # Cola exclusiva y anónima para este servicio

@@ -16,7 +16,7 @@ if not hf_token:
 
 client = InferenceClient(token=hf_token)
 
-#  LÓGICA DE PROCESAMIENTO ÚNICA 
+# Lógica de procesamiento centralizada para texto
 def procesar_texto_logic(task_id, content):
     """
     Función centralizada que realiza la inferencia, guarda en CSV 
@@ -46,7 +46,7 @@ def procesar_texto_logic(task_id, content):
     tasks_history[task_id] = result_data
     return result_data
 
-#  REQUISITO 1: API SÍNCRONA (FLASK) 
+#  ApI REST para procesamiento síncrono
 
 @app.route('/tasks', methods=['POST'])
 def create_task_sync():
@@ -71,10 +71,10 @@ def get_task_status(task_id):
         return jsonify({"error": "Tarea no encontrada"}), 404
     return jsonify(task), 200
 
-#  REQUISITO 2: LÓGICA ASÍNCRONA (RABBITMQ)
+#  Lógica para consumir tareas de RabbitMQ de forma asíncrona
 
 def consume_tasks_async():
-    # Espera inicial para asegurar que RabbitMQ esté listo (del segundo script)
+    # Espera inicial para asegurar que RabbitMQ esté listo
     time.sleep(10)
     
     rabbitmq_host = os.getenv('RABBITMQ_HOST', 'rabbitmq')
@@ -108,13 +108,13 @@ def consume_tasks_async():
         print(f" [*] Asíncrono: procesando {task['task_id']} en {hostname}")
         
         try:
-            # Simulación ligera de procesamiento (del segundo script)
+            # Simulación ligera de procesamiento
             time.sleep(1) 
             
             # Ejecutar lógica común
             result = procesar_texto_logic(task['task_id'], task['content'])
             
-            # PUBLICAR LOG (Lo que no estaba en el primer script)
+            # Publicar log
             log_message = {
                 "task_id": result["task_id"],
                 "agent": "Text_agent",
@@ -143,12 +143,12 @@ def consume_tasks_async():
 
 
 if __name__ == "__main__":
-    # 1. Hilo para RabbitMQ (Asíncrono)
+    # Hilo para RabbitMQ (Asíncrono)
     thread = threading.Thread(target=consume_tasks_async)
     thread.daemon = True
     thread.start()
 
-    # 2. Hilo principal para Flask (Síncrono)
+    # Hilo principal para Flask (Síncrono)
     # Host 0.0.0.0 para ser accesible desde fuera del contenedor
     print(f" [*] Iniciando API Flask en puerto 5000...")
     app.run(host='0.0.0.0', port=5000)

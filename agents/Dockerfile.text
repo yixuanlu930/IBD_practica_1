@@ -2,9 +2,5 @@ FROM python:3.9-slim
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Aquí está la clave: copiamos TU archivo real
 COPY text_agent.py .
-
-# Y le decimos a Python que ejecute ESE archivo
 CMD ["python", "-u", "text_agent.py"]

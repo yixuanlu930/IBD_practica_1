@@ -1,6 +1,5 @@
 import time
 import os
-# Importaciones unificadas
 from event_generator import generate_task_event
 from publisher import get_rabbitmq_connection, publish_task
 
