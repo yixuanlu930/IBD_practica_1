@@ -25,33 +25,51 @@ services:
       - RABBITMQ_USER=user
       - RABBITMQ_PASS=password
     restart: always
-
+    
   text_agent:
     build: 
       context: ./agents
       dockerfile: Dockerfile.text
     depends_on:
       - rabbitmq
+    ports:
+      - "5001:5000" 
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_USER=user
       - RABBITMQ_PASS=password
-      - HF_TOKEN= #Añadir token propio READ de Hugging Face #
+      - HF_TOKEN= #Añadir token propio de Hugging Face #
     volumes:
       - ./results:/results
     restart: always
 
   image_agent:
+    #platform: linux/amd64 
     build:
       context: ./agents  
       dockerfile: Dockerfile.image    
+    depends_on:
+      - rabbitmq
+    ports:
+      - "5002:5000" 
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=user
+      - RABBITMQ_PASS=password
+      - HF_TOKEN= #Añadir token propio de Hugging Face #
+    volumes:
+      - ./results:/results
+    restart: always
+  global_logger:
+    build:
+      context: ./logger
+      dockerfile: Dockerfile.logger
     depends_on:
       - rabbitmq
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_USER=user
       - RABBITMQ_PASS=password
-      - HF_TOKEN=  #Añadir token propio READ de Hugging Face #
     volumes:
       - ./results:/results
     restart: always
